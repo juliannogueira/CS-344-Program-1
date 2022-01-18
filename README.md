@@ -3,11 +3,11 @@ Build the project
 
 Run the program
 - make run file={.csv file}
-- ./output.exe {.csv file}
+- ./movies {.csv file}
 
 Check for memory leaks
 - make check file={.csv file}
-- valgrind --leak-check=yes ./output.exe file={.csv file}
+- valgrind --leak-check=yes ./movies file={.csv file}
 
 Clean
 - make clean
