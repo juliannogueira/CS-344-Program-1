@@ -6,6 +6,18 @@
 
 #include "util.h"
 
+/*
+ * The movie file contains functions to create a linked list from a .csv file,
+ * as well as from an existing movie linked list.
+ * 
+ * Functions are available to read and print the linked list, with or without
+ * filtering options.
+ * 
+ * Memory can be deallocated by passing a movie linked list to freeList().
+ * 
+ * Function comments are included in movie.c.
+ */
+
 struct Movie {
     char *title;
     int *year;

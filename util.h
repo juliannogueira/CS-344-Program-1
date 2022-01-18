@@ -3,6 +3,18 @@
 
 #include <stdio.h>
 
+/*
+ * The util file contains helper functions to be used by main, movie, and menu.
+ * 
+ * There are functions to check for command line arguments, valid files, and
+ * input.
+ * 
+ * There is also a function to get the number of characters in a
+ * null-terminated string.
+ * 
+ * Function comments are included util.c.
+ */
+
 int hasCommandLineArgument(char *argv[]);
 
 int isValidFile(char *filename);

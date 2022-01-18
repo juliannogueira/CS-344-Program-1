@@ -2,7 +2,30 @@
 
 /*
  * The file will contain the following column headers and max lengths:
- * Title [unknown], Year [4], Languages [(5 * 20) + 4 + 2], Rating Value [2].
+ * Title [255], Year [4], Languages [(5 * 20) + 4 + 2], Rating Value [2].
+ * 
+ * Each character in the file is checked and stored in a buffer, until the EOF
+ * is reached.
+ * 
+ * The first line of the file is read, but no processing takes place.
+ * 
+ * The index, column, and line are tracked and reset throughout the function.
+ * 
+ * When a ',' or '\n' is encountered, it triggers the data in the buffer to be
+ * written to a movie struct. If the column number equals 0 at this trigger, a
+ * new movie struct will be created first and linked accordingly.
+ * 
+ * All data from the file will be read into a char buffer. The buffer will be
+ * manually null terminated. Once the data is assigned to a movie struct
+ * attribute, the data will be converted to the respective data type.
+ * 
+ * The column number is reset when a '\n' is encountered. This is what
+ * determines which attribute to write the data too.
+ * 
+ * After the file is processed, if the column number is not equal to 0, then
+ * the last character was not a new line. Therefore, data is still in the
+ * buffer, and it needs to be written to the current column.
+ * 
  * The head of a Movie linked list is returned.
  */
 struct Movie *createListFromFile(char *filename) {
@@ -61,6 +84,20 @@ struct Movie *createListFromFile(char *filename) {
     return head;
 }
 
+/*
+ * Create a linked list containing the highest rated movie per year from a
+ * passed linked list.
+ * 
+ * The passed list will be iterated through. If the year of the current movie
+ * does not exist in the new list, the movie will be added to the new list.
+ * 
+ * If the year does exist in the new list, then the rating will be compared to
+ * the current movie rating. If the current rating is higher, the movie with
+ * the higher rating will replace the movie with the lower rating.
+ * 
+ * The new list is returned, such that only one movie per year exists in the
+ * list, where this movie contains the highest rating. 
+ */
 struct Movie *createListHighestRatedMoviePerYear(struct Movie* source) {
     struct Movie *curr = source;
     struct Movie *temp = NULL;
@@ -102,6 +139,13 @@ struct Movie *createListHighestRatedMoviePerYear(struct Movie* source) {
     return head;
 }
 
+/*
+ * Add data to the passed movie struct.
+ * 
+ * The column number will determine which attribute to write the data to, such
+ * that the appropriate helper function will be called depending on the column
+ * number.
+ */
 void addData(struct Movie *movie, char *buffer, int length, int column) {
     switch (column) {
         case 0:
@@ -119,6 +163,12 @@ void addData(struct Movie *movie, char *buffer, int length, int column) {
     }
 }
 
+/*
+ * Add a title to the movie struct.
+ * 
+ * Iterate through the buffer and assign each character to the char array. The
+ * null terminator is included in the buffer.
+ */
 void addTitle(struct Movie *movie, char *buffer, int length) {
     movie->title = malloc(sizeof(char) * length);
     for (int i = 0; i < length; i++) {
@@ -126,11 +176,24 @@ void addTitle(struct Movie *movie, char *buffer, int length) {
     }
 }
 
+/*
+ * Add a year to the movie struct.
+ * 
+ * The buffer is parsed for an integer, and the integer is assigned to the
+ * year.
+ */
 void addYear(struct Movie *movie, char *buffer, int length) {
     movie->year = malloc(sizeof(int));
     sscanf(buffer, "%d", movie->year);
 }
 
+/*
+ * Add the language(s) to the movie struct.
+ * 
+ * The language(s) are added in the same manner as the title, such that each
+ * character is added to the char array, and the null terminator is already
+ * included in the buffer.
+ */
 void addLanguages(struct Movie *movie, char *buffer, int length) {
     movie->languages = malloc(sizeof(char) * length);
     for (int i = 0; i < length; i++) {
@@ -138,31 +201,61 @@ void addLanguages(struct Movie *movie, char *buffer, int length) {
     }
 }
 
+/*
+ * Add a rating value to the movie struct.
+ * 
+ * The buffer is parsed for a double, and the double is assigned to the year.
+ */
 void addRatingValue(struct Movie *movie, char *buffer, int length) {
     movie->ratingValue = malloc(sizeof(double));
     *(movie->ratingValue) = strtod(buffer, NULL);
 }
 
+/*
+ * Copy the contents of a source movie struct into a target movie struct.
+ *
+ * Memory is allocated for the target movie struct.
+ * 
+ * The year and rating value can be easily assigned.
+ * 
+ * The title and language(s) must be iterated through, and the null terminators
+ * are added.
+ */
 void copyMovie(struct Movie *source, struct Movie *target) {
     target->year = malloc(sizeof(int));
     target->ratingValue = malloc(sizeof(double));
     target->title = malloc(sizeof(char) * (stringLength(source->title) + 1));
     target->languages = malloc(sizeof(char) * (stringLength(source->languages) + 1));
+
     *(target->year) = *(source->year);
+
     *(target->ratingValue) = *(source->ratingValue);
+
     for (int i = 0; i < stringLength(source->title); i++) {
         *(target->title + i) = *(source->title + i);
     }
     *(target->title + (stringLength(source->title))) = '\0';
+
     for (int i = 0; i < stringLength(source->languages); i++) {
         *(target->languages + i) = *(source->languages + i);
     }
     *(target->languages + (stringLength(source->languages))) = '\0';
 }
 
+/*
+ * Copy the contents of a source movie struct into a target movie struct.
+ * 
+ * Memory is reallocated in this function, such that the target movie struct
+ * was initialized prior to the function call, and the contents are only being
+ * updated.
+ * 
+ * The title and languages attributes must be reallocated because the size
+ * could be different, whereas the year and ratingValue do not need to be
+ * reallocated, as the size is constant.
+ */
 void copyMovieReallocate(struct Movie *source, struct Movie *target) {
-    *(target->ratingValue) = *(source->ratingValue);
     *(target->year) = *(source->year);
+    *(target->ratingValue) = *(source->ratingValue);
 
     target->title = realloc(target->title, (sizeof(char) * (stringLength(source->title) + 1)));
     for (int i = 0; i < stringLength(source->title); i++) {
@@ -177,6 +270,11 @@ void copyMovieReallocate(struct Movie *source, struct Movie *target) {
     *(target->languages + (stringLength(source->languages))) = '\0';
 }
 
+/*
+ * Read and print the contents of a movies struct linked list.
+ *
+ * The output is formatted.
+ */
 void readList(struct Movie *head) {
     struct Movie *curr = head;
     while (curr != NULL) {
@@ -189,6 +287,12 @@ void readList(struct Movie *head) {
     }
 }
 
+/*
+ * Read and print the contents of a movies struct linked list by year.
+ *
+ * The year is passed, and only movies with a year equal to the passed year
+ * will be printed.
+ */
 void readListMoviesByYear(struct Movie *head, int year) {
     struct Movie *curr = head;
     int count = 0;
@@ -207,6 +311,23 @@ void readListMoviesByYear(struct Movie *head, int year) {
     }
 }
 
+/*
+ * Read and print the contents of a movie struct linked list by language.
+ * 
+ * The language is passed, and only movies containing that language string will
+ * be printed.
+ * 
+ * The function scans every movie languages string for the first character of
+ * the passed language.
+ * 
+ * If the first letter is encountered, the position of the movie languages
+ * string will continue to be iterated through for as many characters are in
+ * the passed language.
+ * 
+ * If all characters in the passed language are also in the movie languages
+ * string, and the next character is either a ';' or ']' that indicates the
+ * delineation of an item, the movie data will be printed.
+ */
 void readListMoviesByLanguage(struct Movie *head, char *language) {
     struct Movie *curr = head;
     int match = 0;
@@ -242,6 +363,11 @@ void readListMoviesByLanguage(struct Movie *head, char *language) {
     }
 }
 
+/*
+ * Read and print the contents of movie struct linked list.
+ *
+ * Only print the year, rating value, and title.
+ */
 void readListYearRatingValueTitle(struct Movie *head) {
     struct Movie *curr = head;
     while (curr != NULL) {
@@ -253,6 +379,10 @@ void readListYearRatingValueTitle(struct Movie *head) {
     }
 }
 
+/*
+ * Free memory of all movie structs and respective data elements of a passed
+ * movie struct linked list.
+ */
 void freeList(struct Movie *head) {
     struct Movie *curr = head;
     struct Movie *temp = NULL;
