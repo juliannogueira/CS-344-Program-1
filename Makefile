@@ -1,8 +1,9 @@
 CC = gcc -std=c99
 CFLAGS = -g -Wall
+TARGET = movies
 
 output: main.o util.o movie.o menu.o
-	$(CC) $(CFLAGS) main.o util.o movie.o menu.o -o output.exe
+	$(CC) $(CFLAGS) main.o util.o movie.o menu.o -o $(TARGET)
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
@@ -17,10 +18,10 @@ menu.o: menu.c menu.h
 	$(CC) $(CFLAGS) -c menu.c
 
 clean:
-	rm -f *.o output.*
+	rm -f *.o $(TARGET)
 
 run:
-	./output.exe $(file)
+	./$(TARGET) $(file)
 
 check:
-	valgrind --leak-check=yes ./output.exe $(file)
+	valgrind --leak-check=yes ./$(TARGET) $(file)
