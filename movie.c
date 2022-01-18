@@ -13,6 +13,7 @@ struct Movie *createListFromFile(char *filename) {
     int index = 0;
     int column = 0;
     int line = 0;
+    int recordCount = 0;
     const int SIZE = 255;
     char buffer[SIZE];
 
@@ -24,6 +25,7 @@ struct Movie *createListFromFile(char *filename) {
             buffer[index - 1] = '\0';
 
             if (column == 0) {
+                recordCount++;
                 movie = malloc(sizeof(struct Movie));
                 movie->next = NULL;
                 if (head == NULL) {
@@ -47,6 +49,12 @@ struct Movie *createListFromFile(char *filename) {
             column = 0;
         }
     }
+
+    if (column != 0) {
+        addData(movie, buffer, index, column);
+    }
+
+    printf("Processed file %s and parsed data for %d movies", filename, recordCount);
 
     fclose(fp);
 
