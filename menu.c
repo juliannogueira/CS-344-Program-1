@@ -1,5 +1,15 @@
 #include "menu.h"
 
+/*
+ * Display the main menu to the user.
+ * 
+ * The user is prompted to enter a menu option.
+ * 
+ * If the user enters an invalid option, the user is notified.
+ * 
+ * If the user enters a valid option, the user will get the respective data or be
+ * prompted for additional information if necessary.
+ */
 void runMenu(struct Movie *head) {
     int runProgram = 1;
     const int SIZE = 255;
@@ -48,6 +58,14 @@ void runMenu(struct Movie *head) {
     }
 }
 
+/*
+ * Display all movies released in a specified year.
+ *
+ * The user is prompted for the year.
+ * 
+ * The year and the movies struct linked list head is passed to the respective
+ * function, and the results are displayed.
+ */
 void getMoviesByYear(struct Movie *head) {
     const int SIZE = 255;
     const int SIZE_YEAR = 4;
@@ -82,6 +100,18 @@ void getMoviesByYear(struct Movie *head) {
     readListMoviesByYear(head, year);
 }
 
+/*
+ * Display the highest rated movie per year.
+ *
+ * The function displays the header and immediately calls the respective
+ * function to get the highest rated movies per year, such that a new list is
+ * returned.
+ * 
+ * A function to read the list is called, such that the results are displayed.
+ * 
+ * The memory allocated to the new list is freed before resuming control to the
+ * calling function.
+ */
 void getHighestRatedMoviePerYear(struct Movie *head) {
     struct Movie *highestRatedList = NULL;
     char *header =         "----------------- Movies: Highest Rated Per Year -------------------\n";
@@ -100,6 +130,16 @@ void getHighestRatedMoviePerYear(struct Movie *head) {
     freeList(highestRatedList);
 }
 
+/*
+ * Display all movies available in a specified language.
+ * 
+ * The user is prompted to enter a language.
+ * 
+ * The language is passed with the head of the movie struct linked list to the
+ * respective function to search for all movies available in that language.
+ * 
+ * The results are displayed immediately by the called function.
+ */
 void getMoviesByLanguage(struct Movie *head) {
     const int SIZE = 255;
     const int SIZE_LANGUAGE = 20;
