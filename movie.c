@@ -212,7 +212,9 @@ void readListMoviesByLanguage(struct Movie *head, char *language) {
                     if (*(language + j) != *(curr->languages + i + j)) {
                         break;
                     }
-                    if (j == (stringLength(language) - 1)) {
+                    if (j == (stringLength(language) - 1) &&\
+                        (*(curr->languages + i + j + 1) == ';' ||\
+                        *(curr->languages + i + j + 1) == ']')) {
                         match = 1;
                     }
                 }
